@@ -1,5 +1,8 @@
+const dotenv = require('dotenv');
 const _ = require('lodash');
 const nodemailer = require('nodemailer');
+
+dotenv.config();
 
 const config = {
 	service: 'gmail',
@@ -16,11 +19,17 @@ const defaultMail = {
 	text: 'test test',
 };
 
-module.exports = async mail => {
-	mail = _.merge({}, defaultMail, mail);
-
-	transporter.sendMail(mail, (error, info) => {
-		if(error) return console.log(error);
-		console.log('mail sent: ', info.response);
+module.exports = mail => {
+	return new Promise( (resolve, reject) => {
+		mail = _.merge({}, defaultMail, mail);
+		transporter.sendMail(mail, (error, info) => {
+			if(error) {
+				console.log(error);
+				reject('Server error, please try again later\nPrompt: ' + error.response);
+			} else {
+				console.log('mail sent: ', info.response);
+				resolve();
+			}
+		});
 	});
 };

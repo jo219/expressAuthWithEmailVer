@@ -17,26 +17,23 @@ router.post('/register', async (req, res) => {
 	const salt = await bcrypt.genSalt(10);
 	const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-	const activeToken = await bcrypt.genSalt(20);
+	const activeToken = await crypto.randomBytes(20).toString('hex');
     const link = 'http://localhost:3000/api/user/active/' + activeToken;
-    try {
-		mailer({
+
+    const user = new User({
+			name: req.body.name,
+			email: req.body.email,
+			password: hashedPassword,
+			activeToken: activeToken,
+			activeExpires: Date.now() + 24 * 3600 * 1000,
+	});
+
+	try {
+		await mailer({
 	        to: req.body.email,
 	        subject: 'Welcome',
 	        html: 'Please click <a href="' + link + '"> here </a> to activate your account.'
 		});
-	} catch(err) {
-		return res.status(400).send(err);
-	}
-
-	const user = new User({
-		name: req.body.name,
-		email: req.body.email,
-		password: hashedPassword,
-		activeToken: activeToken,
-		activeExpires: Date.now() + 24 * 3600 * 1000,
-	});
-	try {
 		const savedUser = await user.save();
 	    res.send('The activation email for new id:' + savedUser._id + ' has been sent to ' + savedUser.email + ', please click the activation link within 24 hours.');
 	} catch(err) {
