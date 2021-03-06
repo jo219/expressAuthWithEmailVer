@@ -1,4 +1,7 @@
+const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+
+dotenv.config();
 
 // put to router.[get/post]('/', THIS_VERIFIER , (req, res) => {})
 module.export = (req, res, next) => {

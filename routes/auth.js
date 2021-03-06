@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
 	const activeToken = await crypto.randomBytes(20).toString('hex');
-    const link = 'http://localhost:3000/api/user/active/' + activeToken;
+    const link = 'http://192.168.100.237:3000/api/user/active/' + activeToken;
 
     const user = new User({
 			name: req.body.name,
@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
 	try {
 		await mailer({
 	        to: req.body.email,
-	        subject: 'Welcome',
+	        subject: 'Welcome to Orange',
 	        html: 'Please click <a href="' + link + '"> here </a> to activate your account.'
 		});
 		const savedUser = await user.save();
